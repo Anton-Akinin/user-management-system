@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -19,7 +20,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtTokenProvider jwtTokenProvider;
 
     private static final String ADMIN_ENDPOINT = "/api/v1/admin/**";
-    private static final String USER_ENDPOINT = "/api/v1/user/**";
+    private static final String USER_ENDPOINT = "/api/v1/user";
     private static final String AUTH_ENDPOINT = "/api/v1/auth/**";
 
     @Autowired
@@ -33,7 +34,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-
+    @Override
+    public void configure(WebSecurity web){
+        web.ignoring().antMatchers("/v2/api-docs",
+                "/configuration/ui",
+                "/swagger-resources/**",
+                "/configuration/security",
+                "/swagger-ui.html",
+                "/webjars/**");
+    }
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http

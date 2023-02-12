@@ -7,6 +7,7 @@ import com.example.usermanagementsystem.model.dtos.LoginUserDto;
 import com.example.usermanagementsystem.model.response.UserResponse;
 import com.example.usermanagementsystem.security.jwt.JwtTokenProvider;
 import com.example.usermanagementsystem.service.interfaces.UserService;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,7 @@ public class AuthController {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
+    @ApiOperation(value = "Endpoint for new user registration")
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@Valid @RequestBody CreateUserDto createUserDto) {
         User user = userService.register(createUserDto);
@@ -49,9 +51,9 @@ public class AuthController {
         return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
     }
 
+    @ApiOperation(value = "Endpoint for login")
     @PostMapping("/login")
     public ResponseEntity<Object> login(@Valid @RequestBody LoginUserDto loginUserDto){
-        //todo move to the service
         try {
             String email = loginUserDto.getEmail();
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, loginUserDto.getPassword()));
@@ -64,15 +66,16 @@ public class AuthController {
             String token = jwtTokenProvider.createToken(email, user.getRole());
 
             Map<Object, Object> response = new HashMap<>();
-            response.put("username", email);
+            response.put("email", email);
             response.put("token", token);
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (AuthenticationException e) {
-            throw new BadCredentialsException("Invalid username or password");
+            throw new BadCredentialsException("Invalid email or password");
         }
     }
 
+    @ApiOperation(value = "Endpoint for reset password")
     @PutMapping("/reset-password")
     public ResponseEntity<Object> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
 

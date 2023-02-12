@@ -5,6 +5,7 @@ import com.example.usermanagementsystem.model.entity.User;
 import com.example.usermanagementsystem.model.response.UserResponse;
 import com.example.usermanagementsystem.security.jwt.JwtUser;
 import com.example.usermanagementsystem.service.interfaces.UserService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ public class UserController {
         this.userService = userService;
     }
 
+        @ApiOperation(value = "Endpoint to get information about the current user")
     @GetMapping("/user")
     public ResponseEntity<UserResponse> getCurrentUser(Authentication authentication) {
         JwtUser jwtUser = (JwtUser) authentication.getPrincipal();
@@ -35,6 +37,7 @@ public class UserController {
         return new ResponseEntity<>(userResponse, HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Endpoint to get information about the user by id")
     @GetMapping("/user/{userId}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long userId) {
         User user = userService.findById(userId);
@@ -42,6 +45,7 @@ public class UserController {
         return new ResponseEntity<>(userResponse, HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Endpoint to update information about user")
     @PutMapping("/user/{userId}")
     public ResponseEntity<UserResponse> updateUser(@PathVariable("userId") Long userId,
                                                    @Valid @RequestBody UpdateUserDto updateUserDto) {
@@ -50,14 +54,16 @@ public class UserController {
         return new ResponseEntity<>(userResponse, HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Endpoint to delete a user")
     @DeleteMapping("/user/{userId}")
-    public ResponseEntity<String> delete(@PathVariable Long userId) {
+    public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
         userService.delete(userId);
 
         return new ResponseEntity<>("User deleted", HttpStatus.OK);
 
     }
 
+    @ApiOperation(value = "Endpoint to get a list of users by filters")
     @GetMapping("/users")
     public ResponseEntity<List<UserResponse>> getUsers(@RequestParam(required = false) List<String> firstName,
                                @RequestParam(required = false) List<String> lastName,
